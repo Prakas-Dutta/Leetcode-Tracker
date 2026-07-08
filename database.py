@@ -1,23 +1,51 @@
 import mysql.connector
 from leetcode_all_problems import fetch_all_problems
 
-def database_setup():
-    cursor = conn.cursor()
-    if cursor.execute('show tables;'):
-        cursor.execute("create table problem_list('id' int, 'title' varchar(100), 'difficulty' varchar(6));")
-        cursor.execute("create table completed_list('id' int, 'title' varchar(100), 'difficulty' varchar(6), 'approach':varchar(100));")
+def database_setup(conn):
+    cursor = conn.cursor(buffered = True)
+
+    cursor.execute("SHOW TABLES")
+    table_exists = cursor.fetchone() is not None
+
+    if not table_exists:
+        cursor.execute('''
+            CREATE TABLE problem_list (
+                id INT PRIMARY KEY,
+                title VARCHAR(150),
+                difficulty VARCHAR(6)
+            )
+        ''')
+
+        cursor.execute('''
+            CREATE TABLE completed_list (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                leetcode_id VARCHAR(10),
+                title VARCHAR(150),
+                difficulty VARCHAR(6),
+                approach VARCHAR(200)
+            )
+        ''')
+
         data = fetch_all_problems()
         cursor.executemany(
             "INSERT INTO problem_list (id, title, difficulty) VALUES (%s, %s, %s)",
             data
         )
-        cursor.close()
     else:
         data = fetch_all_problems()
-        cursor.executemany(
-            "INSERT INTO problem_list (id, title, difficulty) VALUES (%s, %s, %s)",
-            data
-        )
+        api_length = len(data)
+
+        cursor.execute("SELECT COUNT(*) FROM problem_list")
+        database_length = cursor.fetchone()[0]
+
+        if api_length != database_length:
+            cursor.executemany(
+                "INSERT INTO problem_list (id, title, difficulty) VALUES (%s, %s, %s)",
+                data[database_length:]
+            )
+
+    conn.commit()
+    cursor.close()
 try:
     conn = mysql.connector.connect(
         host = 'localhost',
@@ -43,4 +71,4 @@ except Exception:
         database = 'leetcode'
     )
 
-database_setup()
+database_setup(conn)

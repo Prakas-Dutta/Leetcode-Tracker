@@ -32,6 +32,6 @@ def fetch_all_problems() -> list[dict]:
     problems.sort(key=lambda p: p[0])
     return problems
 
-print(fetch_all_problems())
+
 
 

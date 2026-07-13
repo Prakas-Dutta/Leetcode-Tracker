@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 
-class completedProblem(BaseModel):
-        id: int
+class CompletedProblem(BaseModel):
         leetcode_id: int
         title: str
         difficulty: str
@@ -11,3 +10,8 @@ class Problem(BaseModel):
         leetcode_id: int
         title: str
         difficulty: str
+
+class UpdatedInfo(BaseModel):
+        id:int
+        approach:str
+        updated_approach:str

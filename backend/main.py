@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from database import conn
-from model import CompletedProblem, UpdatedInfo
+from backend.database import conn
+from backend.model import CompletedProblem, UpdatedInfo
 
 app = FastAPI()
 

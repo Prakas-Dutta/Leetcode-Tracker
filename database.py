@@ -19,10 +19,9 @@ def database_setup(conn):
         cursor.execute('''
             CREATE TABLE completed_list (
                 id INT PRIMARY KEY AUTO_INCREMENT,
-                leetcode_id VARCHAR(10),
-                title VARCHAR(150),
-                difficulty VARCHAR(6),
-                approach VARCHAR(200)
+                leetcode_id INT,
+                approach VARCHAR(200),
+                FOREIGN KEY (leetcode_id) REFERENCES problem_list(id)
             )
         ''')
 

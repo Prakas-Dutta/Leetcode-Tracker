@@ -1,9 +1,18 @@
 from fastapi import FastAPI, HTTPException
-from backend.database import conn
-from backend.model import CompletedProblem, UpdatedInfo
+from database import conn
+from model import CompletedProblem, UpdatedInfo
 
 app = FastAPI()
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # your Vite dev server
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 @app.get('/{id}')
 def get_problem_info(id: int):
     cursor = conn.cursor(dictionary=True)
@@ -14,8 +23,9 @@ def get_problem_info(id: int):
         raise HTTPException(status_code=404, detail='ID is not valid')
     return problem
 
-@app.post('/')
+@app.post('/completed_list/')
 def add_problem(problem_info: CompletedProblem):
+    print(problem_info)
     problem = problem_info.model_dump()
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM problem_list WHERE id = %s', (problem['leetcode_id'],))
@@ -24,7 +34,7 @@ def add_problem(problem_info: CompletedProblem):
         cursor.close()
         raise HTTPException(status_code=404, detail='Wrong information')
     else:
-        cursor.execute('INSERT INTO completed_list(leetcode_id, title, difficulty, approach) VALUES(%s, %s, %s, %s)', (problem['leetcode_id'], problem['title'], problem['difficulty'], problem['approach'],))
+        cursor.execute('INSERT INTO completed_list(leetcode_id, approach) VALUES(%s, %s)', (problem['leetcode_id'], problem['approach']))
         conn.commit()
         cursor.close()
         return "Successfully added!!!"
@@ -32,7 +42,7 @@ def add_problem(problem_info: CompletedProblem):
 @app.get('/problem_list/')
 def no_of_problem():
     cursor = conn.cursor(buffered=True)
-    cursor.execute('SELECT COUNT(*) FROM problem_list')
+    cursor.execute('SELECT COUNT(*) FROM completed_list')
     number = cursor.fetchone()
     cursor.close()
     return number[0]

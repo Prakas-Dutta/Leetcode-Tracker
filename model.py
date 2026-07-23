@@ -1,9 +1,7 @@
 from pydantic import BaseModel
 
 class CompletedProblem(BaseModel):
-        leetcode_id: int
-        title: str
-        difficulty: str
+        leetcode_id:int
         approach: str
 
 class Problem(BaseModel):

@@ -1,9 +1,9 @@
-// src/components/AddProblemForm.jsx
+// src/components/DeleteProblemForm.jsx
 import { useState } from "react";
-import { addProblem } from "../services/problemService";
-import "../Styles/AddProblemForm.css";
+import { deleteProblem } from "../services/problemService";
+import "../Styles/DeleteProblemForm.css";
 
-function AddProblemForm({ onProblemAdded }) {
+function DeleteProblemForm() {
   const [id, setId] = useState("");
   const [approach, setApproach] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -31,17 +31,16 @@ function AddProblemForm({ onProblemAdded }) {
     "Bit Manipulation",
   ];
 
-  const handleSubmit = async (e) => {
+  const handleDelete = async (e) => {
     e.preventDefault();
     if (!id || !approach) return;
 
     setSubmitting(true);
     try {
-      await addProblem({ leetcode_id: id, approach: approach });
-      alert("Problem added successfully!");
+      await deleteProblem(id, approach);
+      alert("Problem deleted successfully!");
       setId("");
       setApproach("");
-      if (onProblemAdded) onProblemAdded();
     } catch (err) {
       alert(err.message);
     } finally {
@@ -50,11 +49,11 @@ function AddProblemForm({ onProblemAdded }) {
   };
 
   return (
-    <div className="add-problem-card">
-      <h1 className="add-problem-title">Add a New Problem</h1>
-      <form onSubmit={handleSubmit} className="add-problem-form">
+    <div className="delete-problem-card">
+      <h1 className="delete-problem-title">Delete a Problem</h1>
+      <form onSubmit={handleDelete} className="delete-problem-form">
         <input
-          className="add-problem-input"
+          className="delete-problem-input"
           value={id}
           onChange={(e) => setId(e.target.value)}
           placeholder="Problem ID"
@@ -62,7 +61,7 @@ function AddProblemForm({ onProblemAdded }) {
         />
 
         <select
-          className="add-problem-select"
+          className="delete-problem-select"
           value={approach}
           onChange={(e) => setApproach(e.target.value)}
         >
@@ -78,14 +77,14 @@ function AddProblemForm({ onProblemAdded }) {
 
         <button
           type="submit"
-          className="add-problem-btn"
+          className="delete-problem-btn"
           disabled={submitting}
         >
-          {submitting ? "Adding..." : "Add Problem"}
+          {submitting ? "Deleting..." : "Delete Problem"}
         </button>
       </form>
     </div>
   );
 }
 
-export default AddProblemForm;
+export default DeleteProblemForm;

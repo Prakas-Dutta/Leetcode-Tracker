@@ -10,24 +10,22 @@ def database_setup(conn):
     if not table_exists:
         cursor.execute('''
             CREATE TABLE problem_list (
-                id INT PRIMARY KEY,
+                leetcode_id INT PRIMARY KEY,
                 title VARCHAR(150),
                 difficulty VARCHAR(6)
             )
         ''')
 
         cursor.execute('''
-            CREATE TABLE completed_list (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                leetcode_id INT,
-                approach VARCHAR(200),
-                FOREIGN KEY (leetcode_id) REFERENCES problem_list(id)
-            )
+        CREATE TABLE completed_list
+        (leetcode_id INT, approach VARCHAR(200),
+        FOREIGN KEY (leetcode_id) REFERENCES problem_list(leetcode_id),
+        PRIMARY KEY(leetcode_id, approach));
         ''')
 
         data = fetch_all_problems()
         cursor.executemany(
-            "INSERT INTO problem_list (id, title, difficulty) VALUES (%s, %s, %s)",
+            "INSERT INTO problem_list VALUES (%s, %s, %s)",
             data
         )
     else:
@@ -39,7 +37,7 @@ def database_setup(conn):
 
         if api_length != database_length:
             cursor.executemany(
-                "INSERT INTO problem_list (id, title, difficulty) VALUES (%s, %s, %s)",
+                "INSERT INTO problem_list VALUES (%s, %s, %s)",
                 data[database_length:]
             )
 
@@ -48,15 +46,15 @@ def database_setup(conn):
 try:
     conn = mysql.connector.connect(
         host = 'localhost',
-        user = 'prakas',
-        password = 'Prakas09',
+        user = 'root',
+        password = 'Prakas09@123',
         database = 'leetcode'
     )
 except Exception:
     conn = mysql.connector.connect(
         host = 'localhost',
-        user = 'prakas',
-        password = 'Prakas09',
+        user = 'root',
+        password = 'Prakas09@123',
     )
     cursor = conn.cursor()
     cursor.execute('create database leetcode;')
@@ -65,8 +63,8 @@ except Exception:
     conn.close()
     conn = mysql.connector.connect(
         host = 'localhost',
-        user = 'prakas',
-        password = 'Prakas09',
+        user = 'root',
+        password = 'Prakas09@123',
         database = 'leetcode'
     )
 

@@ -10,6 +10,6 @@ class Problem(BaseModel):
         difficulty: str
 
 class UpdatedInfo(BaseModel):
-        id:int
+        leetcode_id:int
         approach:str
         updated_approach:str

@@ -14,8 +14,13 @@ export async function addProblem(problem) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(problem),
   });
-  if (!res.ok) throw new Error("Failed to add problem");
-  return res.json();
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.detail || "Failed to add problem");
+  }
+
+  return data;
 }
 
 // export async function updateProblem(id, updates) {
@@ -28,9 +33,28 @@ export async function addProblem(problem) {
 //   return res.json();
 // }
 
-// export async function deleteProblem(id) {
-//   const res = await fetch(`${BASE_URL}/problems/${id}`, {
-//     method: "DELETE",
-//   });
-//   if (!res.ok) throw new Error("Failed to delete problem");
-// }
+export async function deleteProblem(id, approach) {
+  const res = await fetch(`${BASE_URL}/completed_list/`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ leetcode_id: id, approach: approach }),
+  });
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.detail || "Failed to delete problem");
+  }
+
+  return data;
+}
+
+export async function getPerformance() {
+  const res = await fetch(`${BASE_URL}/completed_list/`);
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.detail || "Failed to fetch performance data");
+  }
+
+  return data;
+}

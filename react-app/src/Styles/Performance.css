@@ -1,0 +1,96 @@
+/* src/Components/Performance.css */
+.performance-card {
+  max-width: 700px;
+  margin: 30px auto;
+  padding: 28px 24px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
+}
+
+.performance-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.performance-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #666;
+  text-align: center;
+}
+
+.performance-error {
+  color: #d64550;
+}
+
+.performance-empty {
+  text-align: center;
+  color: #888;
+  padding: 20px 0;
+}
+
+.performance-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.performance-table th {
+  text-align: left;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+  padding: 8px 10px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.performance-table td {
+  padding: 10px;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+.performance-rank {
+  color: #aaa;
+  font-weight: 600;
+  width: 30px;
+}
+
+.performance-pattern {
+  font-weight: 500;
+  color: #333;
+}
+
+.performance-count {
+  font-weight: 700;
+  color: #2575fc;
+  width: 50px;
+}
+
+.performance-bar-cell {
+  width: 40%;
+}
+
+.performance-bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: #f0f0f0;
+  overflow: hidden;
+}
+
+.performance-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  transition: width 0.5s ease;
+}

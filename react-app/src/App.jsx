@@ -7,6 +7,7 @@ import Performance from "./Components/Performance";
 import DeleteProblemForm from "./Components/DeleteProblemForm";
 import Home from "./Components/Home";
 import Navbar from "./Components/Navbar";
+import Chatbot from "./Components/Chatbot";
 
 function App() {
   const [problems, setProblems] = useState([]);
@@ -21,7 +22,7 @@ const router = createBrowserRouter([
     { path: "/add", element: <><Navbar /><AddProblemForm onProblemAdded={handleProblemAdded} /></> },
     { path: "/delete", element: <><Navbar /><DeleteProblemForm /></> },
     { path: "/performance", element: <><Navbar /><Performance /></> },
-
+    { path: "/suggestions", element: <><Navbar /><Chatbot /></> },
 ]);
 
   return <RouterProvider router={router} />;

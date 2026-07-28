@@ -58,3 +58,14 @@ export async function getPerformance() {
 
   return data;
 }
+
+export async function chatbotSuggestions() {
+  const res = await fetch(`${BASE_URL}/chatbot_suggestions/`);
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.detail || "Failed to fetch chatbot suggestions");
+  }
+
+  return data;
+}

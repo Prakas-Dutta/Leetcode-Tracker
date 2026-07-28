@@ -1,0 +1,116 @@
+/* src/components/Home.css */
+.home-hero {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.home-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: #f0f4ff;
+  color: #2575fc;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.home-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+}
+
+.home-title-accent {
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.home-subtitle {
+  font-size: 1.05rem;
+  color: #666;
+  line-height: 1.6;
+  max-width: 550px;
+  margin: 0 auto 32px;
+}
+
+.home-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 56px;
+  flex-wrap: wrap;
+}
+
+.home-btn {
+  padding: 12px 26px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.home-btn-primary {
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(37, 117, 252, 0.35);
+}
+
+.home-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(37, 117, 252, 0.45);
+  color: #fff;
+}
+
+.home-btn-secondary {
+  background: #fff;
+  color: #333;
+  border: 1.5px solid #e2e2e2;
+}
+
+.home-btn-secondary:hover {
+  transform: translateY(-2px);
+  border-color: #ccc;
+  color: #333;
+}
+
+.home-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  text-align: left;
+}
+
+.home-feature-card {
+  padding: 22px 18px;
+  border-radius: 14px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+}
+
+.home-feature-icon {
+  font-size: 1.6rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.home-feature-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #1a1a1a;
+}
+
+.home-feature-card p {
+  font-size: 0.88rem;
+  color: #777;
+  line-height: 1.5;
+  margin: 0;
+}

@@ -86,3 +86,81 @@ def update_approach(problem_info:UpdatedInfo):
         cursor.close()
         raise HTTPException(status_code=404, detail='The value of ID or approach is wrong')
 
+import httpx, json, get_recent_leetcode_solutions
+
+def build_prompt(pattern_stats, recent, contest_rating=1470):
+    return f'''You are a DSA coach. Given a user's solved-problem pattern breakdown, 
+    suggest what to practice next. Return ONLY valid JSON, no markdown, no code fences.
+
+    Pattern counts: {pattern_stats}
+    Recently solved (last 10): {recent}
+    Contest rating: {contest_rating}
+
+    Return JSON in exactly this format:
+    {{
+    "weak_patterns": ["pattern1", "pattern2"],
+    "reasoning": "1-2 sentences",
+    "suggested_focus": "pattern name",
+    "suggested_problems": [{{ "name": "Problem name 1", "url": "https://leetcode.com/problems/problem-1/" }}, {{ "name": "Problem name 2", "url": "https://leetcode.com/problems/problem-2/" }}, {{ "name": "Problem name 3", "url": "https://leetcode.com/problems/problem-3/" }}]
+    }}'''
+
+from dotenv import load_dotenv
+import os
+import json
+import httpx
+
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent"
+
+
+def extract_json(raw_text: str) -> dict:
+    """Strip markdown code fences if present, then parse JSON safely."""
+    text = raw_text.strip()
+    if text.startswith("```"):
+        # remove leading ```json or ``` and trailing ```
+        text = text.split("```")[1]
+        if text.startswith("json"):
+            text = text[4:]
+        text = text.strip()
+    return json.loads(text)
+
+
+@app.get('/chatbot_suggestions/')
+async def get_suggestions():
+    leetcode_username = "Prakas26"  # your actual LeetCode handle
+
+    pattern_stats = list_problem_approach()
+    recent = await get_recent_leetcode_solutions.get_recent_leetcode_solutions(
+        leetcode_username=leetcode_username, limit=10
+    )
+
+    prompt = build_prompt(pattern_stats, recent)
+
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.post(
+                GEMINI_URL,
+                headers={
+                    "x-goog-api-key": GEMINI_API_KEY,
+                    "Content-Type": "application/json"
+                },
+                json={"contents": [{"parts": [{"text": prompt}]}]}
+            )
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=503, detail=f"Could not reach Gemini API: {e}")
+
+    data = resp.json()
+
+    if "candidates" not in data:
+        print("GEMINI ERROR RESPONSE:", data)
+        raise HTTPException(status_code=502, detail=str(data))
+
+    raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
+
+    try:
+        return extract_json(raw_text)
+    except json.JSONDecodeError:
+        print("FAILED TO PARSE GEMINI OUTPUT:", raw_text)
+        raise HTTPException(status_code=502, detail="Gemini returned non-JSON output")

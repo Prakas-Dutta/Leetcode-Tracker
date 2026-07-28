@@ -1,0 +1,115 @@
+/* src/components/Chatbot.css */
+.chatbot-card {
+  max-width: 700px;
+  margin: 30px auto;
+  padding: 28px 24px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
+}
+
+.chatbot-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 22px;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.chatbot-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #666;
+  text-align: center;
+}
+
+.chatbot-error {
+  color: #d64550;
+}
+
+.chatbot-section {
+  margin-bottom: 20px;
+}
+
+.chatbot-section-heading {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+  margin-bottom: 8px;
+}
+
+.chatbot-text {
+  color: #333;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.chatbot-focus-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.chatbot-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chatbot-tag {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #fdeaea;
+  color: #d64550;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.chatbot-problem-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chatbot-problem-item {
+  border: 1.5px solid #eee;
+  border-radius: 10px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.chatbot-problem-item:hover {
+  border-color: #38ef7d;
+  background: #f7fefa;
+}
+
+.chatbot-problem-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  color: #333;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.chatbot-link-arrow {
+  color: #11998e;
+  transition: transform 0.2s ease;
+}
+
+.chatbot-problem-item:hover .chatbot-link-arrow {
+  transform: translateX(3px);
+}

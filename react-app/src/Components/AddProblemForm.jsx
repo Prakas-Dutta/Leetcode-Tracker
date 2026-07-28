@@ -5,6 +5,7 @@ import "../Styles/AddProblemForm.css";
 
 function AddProblemForm({ onProblemAdded }) {
   const [id, setId] = useState("");
+  const [loading, setLoading] = useState(true);
   const [approach, setApproach] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -56,11 +57,16 @@ function AddProblemForm({ onProblemAdded }) {
         <input
           className="add-problem-input"
           value={id}
-          onChange={(e) => setId(e.target.value)}
+          onChange={(e) => {setId(e.target.value), setLoading(false)}}
           placeholder="Problem ID"
           type="number"
         />
-
+        <input
+          className="add-problem-input"
+          value={loading ? "Loading..." : ""}
+          placeholder="Problem Title"
+          type="string"
+        />
         <select
           className="add-problem-select"
           value={approach}

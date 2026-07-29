@@ -1,5 +1,15 @@
 import mysql.connector
 from leetcode_all_problems import fetch_all_problems
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DB_HOST = os.getenv("DB_HOST")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+
 
 def database_setup(conn):
     cursor = conn.cursor(buffered = True)
@@ -45,16 +55,16 @@ def database_setup(conn):
     cursor.close()
 try:
     conn = mysql.connector.connect(
-        host = 'localhost',
-        user = 'root',
-        password = 'Prakas09@123',
-        database = 'leetcode'
+        host = DB_HOST,
+        user = DB_USER,
+        password = DB_PASSWORD,
+        database = DB_NAME
     )
 except Exception:
     conn = mysql.connector.connect(
-        host = 'localhost',
-        user = 'root',
-        password = 'Prakas09@123',
+        host = DB_HOST,
+        user = DB_USER,
+        password = DB_PASSWORD,
     )
     cursor = conn.cursor()
     cursor.execute('create database leetcode;')
@@ -62,10 +72,10 @@ except Exception:
     cursor.close()
     conn.close()
     conn = mysql.connector.connect(
-        host = 'localhost',
-        user = 'root',
-        password = 'Prakas09@123',
-        database = 'leetcode'
+        host = DB_HOST,
+        user = DB_USER,
+        password = DB_PASSWORD,
+        database = DB_NAME
     )
 
 database_setup(conn)

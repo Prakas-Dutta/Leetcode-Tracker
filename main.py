@@ -111,15 +111,13 @@ import httpx
 
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
+LEETCODE_USERNAME = os.getenv("LEETCODE_USERNAME")
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent"
 
 
 def extract_json(raw_text: str) -> dict:
-    """Strip markdown code fences if present, then parse JSON safely."""
     text = raw_text.strip()
     if text.startswith("```"):
-        # remove leading ```json or ``` and trailing ```
         text = text.split("```")[1]
         if text.startswith("json"):
             text = text[4:]
@@ -129,7 +127,7 @@ def extract_json(raw_text: str) -> dict:
 
 @app.get('/chatbot_suggestions/')
 async def get_suggestions():
-    leetcode_username = "Prakas26"  # your actual LeetCode handle
+    leetcode_username = LEETCODE_USERNAME
 
     pattern_stats = list_problem_approach()
     recent = await get_recent_leetcode_solutions.get_recent_leetcode_solutions(

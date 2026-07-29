@@ -68,7 +68,6 @@ except Exception:
     )
     cursor = conn.cursor()
     cursor.execute('create database leetcode;')
-    database_setup()
     cursor.close()
     conn.close()
     conn = mysql.connector.connect(

@@ -16,7 +16,7 @@ app.add_middleware(
 @app.get('/{id}')
 def get_problem_info(id: int):
     cursor = conn.cursor(dictionary=True)
-    cursor.execute('SELECT * FROM problem_list WHERE id = %s', (id,))
+    cursor.execute('SELECT * FROM problem_list WHERE leetcode_id = %s', (id,))
     problem = cursor.fetchone()
     cursor.close()
     if problem is None:
@@ -37,7 +37,7 @@ def add_problem(problem_info: CompletedProblem):
         cursor.execute('INSERT INTO completed_list VALUES(%s, %s)', (problem['leetcode_id'], problem['approach']))
         conn.commit()
         cursor.close()
-        return "Successfully added!!!"
+        raise HTTPException(status_code=201, detail='Added successfully!!!')
 
 @app.get('/problem_list/')
 def no_of_problem():
@@ -65,7 +65,7 @@ def delete_completed_problem(problem:CompletedProblem):
         cursor.execute('DELETE FROM completed_list WHERE leetcode_id=%s and approach=%s', (id, approach, ))
         conn.commit()
         cursor.close()
-        return 'Deleted successfully!!!'
+        raise HTTPException(status_code=204, detail='Deleted successfully!!!')
     else:
         cursor.close()
         raise HTTPException(status_code=404, detail='The value of ID or approach is wrong')
@@ -81,10 +81,18 @@ def update_approach(problem_info:UpdatedInfo):
         cursor.execute('UPDATE completed_list SET approach=%s WHERE leetcode_id=%s and approach=%s', (problem['updated_approach'], problem['leetcode_id'], problem['approach'], ))
         conn.commit()
         cursor.close()
-        return 'Updated successfully!!!'
+        raise HTTPException(status_code=200, detail='Updated successfully!!!')
     else:
         cursor.close()
         raise HTTPException(status_code=404, detail='The value of ID or approach is wrong')
+
+@app.get('/valid_approaches/{id}')
+def get_valid_approaches(id: int):
+    cursor = conn.cursor(buffered=True, dictionary=True)
+    cursor.execute('SELECT approach FROM completed_list WHERE leetcode_id = %s', (id,))
+    result = cursor.fetchall()
+    cursor.close()
+    return [row['approach'] for row in result]
 
 import httpx, json, get_recent_leetcode_solutions
 

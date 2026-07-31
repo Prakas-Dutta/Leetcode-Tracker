@@ -8,6 +8,7 @@ import DeleteProblemForm from "./Components/DeleteProblemForm";
 import Home from "./Components/Home";
 import Navbar from "./Components/Navbar";
 import Chatbot from "./Components/Chatbot";
+import UpdateProblemForm from "./Components/UpdateProblemForm";
 
 function App() {
   const [problems, setProblems] = useState([]);
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
     { path: "/delete", element: <><Navbar /><DeleteProblemForm /></> },
     { path: "/performance", element: <><Navbar /><Performance /></> },
     { path: "/suggestions", element: <><Navbar /><Chatbot /></> },
+    { path: "/update", element: <><Navbar /><UpdateProblemForm /></> }
 ]);
 
   return <RouterProvider router={router} />;

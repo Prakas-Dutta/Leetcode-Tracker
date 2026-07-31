@@ -1,6 +1,7 @@
 // src/components/DeleteProblemForm.jsx
 import { useState } from "react";
 import { deleteProblem } from "../services/problemService";
+import approaches from "./Approaches";
 import "../Styles/DeleteProblemForm.css";
 
 function DeleteProblemForm() {
@@ -8,28 +9,6 @@ function DeleteProblemForm() {
   const [approach, setApproach] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const approaches = [
-    "Two Pointers",
-    "Sliding Window (Fixed Size)",
-    "Sliding Window (Variable Size)",
-    "Prefix Sum",
-    "Prefix Sum + HashMap",
-    "Kadane's Algorithm",
-    "Monotonic Stack",
-    "Monotonic Deque",
-    "Fast & Slow Pointers",
-    "Binary Search on Array",
-    "Sorting-Based Approach",
-    "Cyclic Sort",
-    "In-place Array Manipulation",
-    "Hashing / Frequency Map",
-    "Greedy",
-    "Divide and Conquer",
-    "Dynamic Programming on Arrays",
-    "Matrix Traversal Patterns",
-    "Union-Find (Disjoint Set)",
-    "Bit Manipulation",
-  ];
 
   const handleDelete = async (e) => {
     e.preventDefault();

@@ -1,0 +1,75 @@
+/* src/Styles/UpdateProblemForm.css */
+.update-problem-card {
+  max-width: 420px;
+  margin: 30px auto;
+  padding: 28px 24px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
+}
+
+.update-problem-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.update-problem-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.update-problem-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #8a8a8a;
+  margin-bottom: -8px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.update-problem-input,
+.update-problem-select {
+  padding: 10px 14px;
+  border: 1.5px solid #e2e2e2;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.update-problem-input:focus,
+.update-problem-select:focus {
+  border-color: #8f94fb;
+  box-shadow: 0 0 0 3px rgba(143, 148, 251, 0.15);
+}
+
+.update-problem-btn {
+  margin-top: 6px;
+  padding: 11px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(78, 84, 200, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.update-problem-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(78, 84, 200, 0.45);
+}
+
+.update-problem-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

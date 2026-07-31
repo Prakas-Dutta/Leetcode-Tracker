@@ -1,36 +1,17 @@
 // src/components/AddProblemForm.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { addProblem } from "../services/problemService";
+import approaches from "./Approaches";
 import "../Styles/AddProblemForm.css";
+import { getTitle } from "../services/problemService";
 
 function AddProblemForm({ onProblemAdded }) {
   const [id, setId] = useState("");
   const [loading, setLoading] = useState(true);
   const [approach, setApproach] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [problemTitle, setProblemTitle] = useState("");
 
-  const approaches = [
-    "Two Pointers",
-    "Sliding Window (Fixed Size)",
-    "Sliding Window (Variable Size)",
-    "Prefix Sum",
-    "Prefix Sum + HashMap",
-    "Kadane's Algorithm",
-    "Monotonic Stack",
-    "Monotonic Deque",
-    "Fast & Slow Pointers",
-    "Binary Search on Array",
-    "Sorting-Based Approach",
-    "Cyclic Sort",
-    "In-place Array Manipulation",
-    "Hashing / Frequency Map",
-    "Greedy",
-    "Divide and Conquer",
-    "Dynamic Programming on Arrays",
-    "Matrix Traversal Patterns",
-    "Union-Find (Disjoint Set)",
-    "Bit Manipulation",
-  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,7 +30,9 @@ function AddProblemForm({ onProblemAdded }) {
       setSubmitting(false);
     }
   };
-
+  useEffect(() => {
+    getTitle(id, setProblemTitle, setLoading);
+  }, [id]);
   return (
     <div className="add-problem-card">
       <h1 className="add-problem-title">Add a New Problem</h1>
@@ -57,16 +40,13 @@ function AddProblemForm({ onProblemAdded }) {
         <input
           className="add-problem-input"
           value={id}
-          onChange={(e) => {setId(e.target.value), setLoading(false)}}
+          onChange={(e) => {setId(e.target.value)}}
           placeholder="Problem ID"
           type="number"
         />
-        <input
-          className="add-problem-input"
-          value={loading ? "Loading..." : ""}
-          placeholder="Problem Title"
-          type="string"
-        />
+        <label className="add-problem-label" htmlFor="approach">
+        {loading ? "Problem Title" : problemTitle ? `Problem Title: ${problemTitle}` : "Problem Title: Not Found"}
+        </label>
         <select
           className="add-problem-select"
           value={approach}

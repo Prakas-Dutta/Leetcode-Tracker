@@ -60,7 +60,7 @@ export async function getPerformance() {
 }
 
 export async function chatbotSuggestions() {
-  const res = await fetch(`${BASE_URL}/chatbot_suggestions/`);
+  const res = await fetch(`${BASE_URL}/suggestions/`);
   const data = await res.json();
 
   if (!res.ok) {

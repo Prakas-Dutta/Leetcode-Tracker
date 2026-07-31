@@ -1,6 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from database import conn
 from model import CompletedProblem, UpdatedInfo
+import httpx
+from ai_support import build_prompt, extract_json
+from dotenv import load_dotenv
+import get_recent_leetcode_solutions
+import json
+import os
+
 
 app = FastAPI()
 
@@ -13,6 +20,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+LEETCODE_USERNAME = os.getenv("LEETCODE_USERNAME")
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent"
+
+
 @app.get('/{id}')
 def get_problem_info(id: int):
     cursor = conn.cursor(dictionary=True)
@@ -55,6 +69,7 @@ def list_problem_approach():
     cursor.close()
     return result
 
+
 @app.delete('/completed_list/')
 def delete_completed_problem(problem:CompletedProblem):
     id, approach = problem.leetcode_id, problem.approach
@@ -94,46 +109,7 @@ def get_valid_approaches(id: int):
     cursor.close()
     return [row['approach'] for row in result]
 
-import httpx, json, get_recent_leetcode_solutions
-
-def build_prompt(pattern_stats, recent, contest_rating=1470):
-    return f'''You are a DSA coach. Given a user's solved-problem pattern breakdown, 
-    suggest what to practice next. Return ONLY valid JSON, no markdown, no code fences.
-
-    Pattern counts: {pattern_stats}
-    Recently solved (last 10): {recent}
-    Contest rating: {contest_rating}
-
-    Return JSON in exactly this format:
-    {{
-    "weak_patterns": ["pattern1", "pattern2"],
-    "reasoning": "1-2 sentences",
-    "suggested_focus": "pattern name",
-    "suggested_problems": [{{ "name": "Problem name 1", "url": "https://leetcode.com/problems/problem-1/" }}, {{ "name": "Problem name 2", "url": "https://leetcode.com/problems/problem-2/" }}, {{ "name": "Problem name 3", "url": "https://leetcode.com/problems/problem-3/" }}]
-    }}'''
-
-from dotenv import load_dotenv
-import os
-import json
-import httpx
-
-load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-LEETCODE_USERNAME = os.getenv("LEETCODE_USERNAME")
-GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent"
-
-
-def extract_json(raw_text: str) -> dict:
-    text = raw_text.strip()
-    if text.startswith("```"):
-        text = text.split("```")[1]
-        if text.startswith("json"):
-            text = text[4:]
-        text = text.strip()
-    return json.loads(text)
-
-
-@app.get('/chatbot_suggestions/')
+@app.get('/suggestions/')
 async def get_suggestions():
     leetcode_username = LEETCODE_USERNAME
 

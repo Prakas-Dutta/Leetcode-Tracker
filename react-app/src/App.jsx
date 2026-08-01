@@ -9,6 +9,8 @@ import Home from "./Components/Home";
 import Navbar from "./Components/Navbar";
 import Chatbot from "./Components/Chatbot";
 import UpdateProblemForm from "./Components/UpdateProblemForm";
+import LoginForm from "./Components/LoginForm";
+import SignupForm from "./Components/SignupForm";
 
 function App() {
   const [problems, setProblems] = useState([]);
@@ -18,8 +20,9 @@ function App() {
   };
 
 const router = createBrowserRouter([
-
-    { path: "/", element: <><Navbar /><ProblemCount /><Home /></> },
+    {path: "/", element: <LoginForm />},
+    {path: "/signup", element: <SignupForm />},
+    { path: "/home", element: <><Navbar /><ProblemCount /><Home /></> },
     { path: "/add", element: <><Navbar /><AddProblemForm onProblemAdded={handleProblemAdded} /></> },
     { path: "/delete", element: <><Navbar /><DeleteProblemForm /></> },
     { path: "/performance", element: <><Navbar /><Performance /></> },

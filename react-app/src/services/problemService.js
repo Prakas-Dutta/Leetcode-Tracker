@@ -97,3 +97,54 @@ export async function getValidApproaches(id, setValidApproaches) {
   }
   setValidApproaches(data);
 }
+
+export async function loginUser(username, password) {
+  const res = await fetch(`${BASE_URL}/auth/`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username:username, password:password }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.detail || "Failed to validate user");
+  }
+  return data;
+}
+
+export async function signupUser(username, password) {
+  const res = await fetch(`${BASE_URL}/auth/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username:username, password:password }),
+  });
+  const data = await res.json();
+  return data;
+}
+
+export function authenticateUser(username, password) {
+  if (!username || !password) {
+    throw new Error("Username and password are required");
+  }
+  else if (username.includes(" ") || password.includes(" ")) {
+    throw new Error("Username and password cannot contain spaces");
+  }
+  else if (username.length < 3 || password.length < 3) {
+    throw new Error("Username and password must be at least 3 characters long");
+  }
+  else if (!username.includes("@")) {
+    throw new Error("Username must contain '@'");
+  }
+  else if (!username.includes(".com")) {
+    throw new Error("Username must contain '.com'");
+  }
+  else if (username.indexOf("@") > username.indexOf(".com")) {
+    throw new Error("Username must contain '@' before '.com'");
+  }
+  else if (username.indexOf("@") !== username.lastIndexOf("@")) {
+    throw new Error("Username must contain only one '@'");
+  }
+  else
+  {
+    return true;
+  }
+}

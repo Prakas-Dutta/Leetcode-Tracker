@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from database import conn
-from model import CompletedProblem, UpdatedInfo
+from model import CompletedProblem, UpdatedInfo, UserInfo
 import httpx
 from ai_support import build_prompt, extract_json
 from dotenv import load_dotenv
@@ -101,13 +101,30 @@ def update_approach(problem_info:UpdatedInfo):
         cursor.close()
         raise HTTPException(status_code=404, detail='The value of ID or approach is wrong')
 
-@app.get('/valid_approaches/{id}')
-def get_valid_approaches(id: int):
+@app.get('/auth/')
+def login_user(userinfo: UserInfo):
     cursor = conn.cursor(buffered=True, dictionary=True)
-    cursor.execute('SELECT approach FROM completed_list WHERE leetcode_id = %s', (id,))
-    result = cursor.fetchall()
+    cursor.execute('SELECT * FROM user_info WHERE username=%s AND password=%s', (userinfo.username, userinfo.password))
+    result = cursor.fetchone()
+    if result is None:
+        cursor.close()
+        raise HTTPException(status_code=404, detail='Invalid credentials')
     cursor.close()
-    return [row['approach'] for row in result]
+    raise HTTPException(status_code=200, detail='Login successful')
+
+@app.post('/auth/')
+def signup_user(userinfo: UserInfo):
+    cursor = conn.cursor(buffered=True)
+    cursor.execute('SELECT * FROM user_info WHERE username=%s', (userinfo.username,))
+    result = cursor.fetchone()
+    if result is not None:
+        cursor.close()
+        raise HTTPException(status_code=409, detail='Username already exists')
+    cursor.execute('INSERT INTO user_info (username, password) VALUES (%s, %s)', (userinfo.username, userinfo.password))
+    conn.commit()
+    cursor.close()
+    raise HTTPException(status_code=201, detail='User created successfully')
+
 
 @app.get('/suggestions/')
 async def get_suggestions():

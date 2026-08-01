@@ -13,3 +13,7 @@ class UpdatedInfo(BaseModel):
         leetcode_id:int
         approach:str
         updated_approach:str
+
+class UserInfo(BaseModel):
+        username:str
+        password:str

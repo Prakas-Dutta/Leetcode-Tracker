@@ -101,7 +101,7 @@ def update_approach(problem_info:UpdatedInfo):
         cursor.close()
         raise HTTPException(status_code=404, detail='The value of ID or approach is wrong')
 
-@app.get('/auth/')
+@app.post('/login/')
 def login_user(userinfo: UserInfo):
     cursor = conn.cursor(buffered=True, dictionary=True)
     cursor.execute('SELECT * FROM user_info WHERE username=%s AND password=%s', (userinfo.username, userinfo.password))
@@ -112,7 +112,7 @@ def login_user(userinfo: UserInfo):
     cursor.close()
     raise HTTPException(status_code=200, detail='Login successful')
 
-@app.post('/auth/')
+@app.post('/signup/')
 def signup_user(userinfo: UserInfo):
     cursor = conn.cursor(buffered=True)
     cursor.execute('SELECT * FROM user_info WHERE username=%s', (userinfo.username,))

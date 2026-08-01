@@ -25,12 +25,19 @@ def database_setup(conn):
                 difficulty VARCHAR(6)
             )
         ''')
-
+        cursor.execute('''
+            CREATE TABLE user_info (
+                user_id INT PRIMARY KEY AUTO_INCREMENT,
+                username VARCHAR(200),
+                password VARCHAR(50)
+            )
+        ''')
         cursor.execute('''
         CREATE TABLE completed_list
-        (leetcode_id INT, approach VARCHAR(200),
-        FOREIGN KEY (leetcode_id) REFERENCES problem_list(leetcode_id),
-        PRIMARY KEY(leetcode_id, approach));
+        (leetcode_id INT, user_id INT, approach VARCHAR(200),
+        FOREIGN KEY (leetcode_id) REFERENCES problem_list(leetcode_id), 
+        FOREIGN KEY (user_id) REFERENCES user_info(user_id),
+        PRIMARY KEY(leetcode_id, user_id, approach));
         ''')
 
         data = fetch_all_problems()

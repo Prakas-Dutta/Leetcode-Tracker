@@ -99,8 +99,8 @@ export async function getValidApproaches(id, setValidApproaches) {
 }
 
 export async function loginUser(username, password) {
-  const res = await fetch(`${BASE_URL}/auth/`, {
-    method: "GET",
+  const res = await fetch(`${BASE_URL}/login/`, {
+    method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username:username, password:password }),
   });
@@ -112,7 +112,7 @@ export async function loginUser(username, password) {
 }
 
 export async function signupUser(username, password) {
-  const res = await fetch(`${BASE_URL}/auth/`, {
+  const res = await fetch(`${BASE_URL}/signup/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username:username, password:password }),

@@ -1,6 +1,6 @@
 import json
 
-def build_prompt(pattern_stats, recent, contest_rating=1470):
+def build_prompt(pattern_stats, recent, contest_rating):
     return f'''You are a DSA coach. Given a user's solved-problem pattern breakdown, 
     suggest what to practice next. Return ONLY valid JSON, no markdown, no code fences.
 

@@ -1,23 +1,32 @@
 from fastapi import FastAPI, HTTPException, Header, Depends
 from database import conn
-from model import CompletedProblem, UpdatedInfo, UserInfo
+from model import CompletedProblem, UpdatedInfo, LoginUserInfo, SignupUserInfo
 import httpx
 from ai_support import build_prompt, extract_json
 from dotenv import load_dotenv
-import get_recent_leetcode_solutions
+from get_recent_leetcode_solutions import get_leetcode_profile_data
 import json
 import os
 from jose import jwt
 from datetime import timedelta, datetime, timezone
+from passlib.context import CryptContext
+from fastapi.middleware.cors import CORSMiddleware
 
+
+crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+def hash_password(password: str):
+    return crypt_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str):
+    return crypt_context.verify(plain_password, hashed_password)
 
 def create_access_token(userinfo: dict):
     expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     cursor = conn.cursor(buffered=True, dictionary=True)
-    cursor.execute('SELECT user_id FROM user_info WHERE username=%s AND password=%s', (userinfo['username'], userinfo['password']))
+    cursor.execute('SELECT user_id FROM user_info WHERE username=%s', (userinfo['username'], ))
     user_id = cursor.fetchone()
     userinfo = {'user_id': user_id['user_id'], "exp": expire}
-    return jwt.encode(userinfo, SECRET_KEY, algorithm="HS256")
+    return jwt.encode(userinfo, SECRET_KEY, algorithm=ALGORITHM)
 
 def verify_access_token(token: str = Header(...)):
     try:
@@ -28,10 +37,17 @@ def verify_access_token(token: str = Header(...)):
     except jwt.JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+def get_list(user_info):
+    cursor = conn.cursor(buffered=True, dictionary=True)
+    cursor.execute('SELECT DISTINCT approach, COUNT(*) as no_of_problems FROM completed_list WHERE user_id = %s GROUP BY approach', (user_info['user_id'],))
+    result = cursor.fetchall()
+    cursor.close()
+    return result
+
 
 app = FastAPI()
 
-from fastapi.middleware.cors import CORSMiddleware
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -46,6 +62,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 LEETCODE_USERNAME = os.getenv("LEETCODE_USERNAME")
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent"
 SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
 
 @app.get('/{id}')
 def get_problem_info(id: int):
@@ -80,13 +97,11 @@ def no_of_problem(user_info: dict = Depends(verify_access_token)):
     cursor.close()
     return number[0]
 
+
+
 @app.get('/completed_list/')
 def list_problem_approach(user_info: dict = Depends(verify_access_token)):
-    cursor = conn.cursor(buffered=True, dictionary=True)
-    cursor.execute('SELECT DISTINCT approach, COUNT(*) as no_of_problems FROM completed_list WHERE user_id = %s GROUP BY approach', (user_info['user_id'],))
-    result = cursor.fetchall()
-    cursor.close()
-    return result
+    return get_list(user_info)
 
 
 @app.delete('/completed_list/')
@@ -121,25 +136,33 @@ def update_approach(problem_info:UpdatedInfo, user_info: dict = Depends(verify_a
         raise HTTPException(status_code=404, detail='The value of ID or approach is wrong')
 
 @app.post('/login/')
-def login_user(userinfo: UserInfo):
+def login_user(userinfo: LoginUserInfo):
     cursor = conn.cursor(buffered=True, dictionary=True)
-    cursor.execute('SELECT * FROM user_info WHERE username=%s AND password=%s', (userinfo.username, userinfo.password))
+    cursor.execute('SELECT * FROM user_info WHERE username=%s', (userinfo.username,))
     result = cursor.fetchone()
     if result is None:
+        cursor.close()
+        raise HTTPException(status_code=404, detail='No user found with this username')
+    if not verify_password(userinfo.password, result['password']):
         cursor.close()
         raise HTTPException(status_code=404, detail='Invalid credentials')
     cursor.close()
     return {"message": "Login successful", "token": create_access_token(userinfo.model_dump())}
 
 @app.post('/signup/')
-def signup_user(userinfo: UserInfo):
+def signup_user(userinfo: SignupUserInfo):
     cursor = conn.cursor(buffered=True)
     cursor.execute('SELECT * FROM user_info WHERE username=%s', (userinfo.username,))
     result = cursor.fetchone()
     if result is not None:
         cursor.close()
         raise HTTPException(status_code=409, detail='Username already exists')
-    cursor.execute('INSERT INTO user_info (username, password) VALUES (%s, %s)', (userinfo.username, userinfo.password))
+    cursor.execute('SELECT * FROM user_info WHERE leetcode_username=%s', (userinfo.leetcode_username,))
+    result = cursor.fetchone()
+    if result is not None:
+        cursor.close()
+        raise HTTPException(status_code=409, detail='Leetcode username already exists')
+    cursor.execute('INSERT INTO user_info (username, leetcode_username, password) VALUES (%s, %s, %s)', (userinfo.username, userinfo.leetcode_username, hash_password(userinfo.password[:72])))
     conn.commit()
     cursor.close()
     return 'User created successfully'
@@ -153,14 +176,18 @@ def get_valid_approaches(id: int, user_info: dict = Depends(verify_access_token)
     return [row['approach'] for row in result]
 
 @app.get('/suggestions/')
-async def get_suggestions(pattern_stats: list[dict] = Depends(list_problem_approach)):
-    leetcode_username = LEETCODE_USERNAME
+async def get_suggestions(user_info: dict = Depends(verify_access_token)):
+    cursor = conn.cursor(buffered=True, dictionary=True)
+    cursor.execute('SELECT leetcode_username FROM user_info WHERE user_id=%s', (user_info['user_id'],))
+    leetcode_username = cursor.fetchone()['leetcode_username']
+    cursor.close()
+    pattern_stats = get_list(user_info)
 
-    recent = await get_recent_leetcode_solutions.get_recent_leetcode_solutions(
-        leetcode_username=leetcode_username, limit=10
+    recent = await get_leetcode_profile_data(
+        leetcode_username=leetcode_username, limit=20
     )
 
-    prompt = build_prompt(pattern_stats, recent)
+    prompt = build_prompt(pattern_stats, recent["recent_submissions"], recent["contest_ranking"])
 
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:

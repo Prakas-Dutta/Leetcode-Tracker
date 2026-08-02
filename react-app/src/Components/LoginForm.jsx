@@ -10,7 +10,7 @@ function LoginForm() {
         const username = e.target.username.value;
         const password = e.target.password.value;
         try {
-                if (authenticateUser(username, password)) {
+                if (authenticateUser([username, password])) {
                 const status = await loginUser(username, password);
                 console.log(status);
                 if(status === "Login successful") {

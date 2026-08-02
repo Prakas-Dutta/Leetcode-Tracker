@@ -1,13 +1,15 @@
 // src/components/DeleteProblemForm.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { deleteProblem } from "../services/problemService";
 import approaches from "./Approaches";
 import "../Styles/DeleteProblemForm.css";
+import {getValidApproaches} from "../services/problemService";
 
 function DeleteProblemForm() {
   const [id, setId] = useState("");
   const [approach, setApproach] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [validApproach, setValidApproach] = useState([]);
 
 
   const handleDelete = async (e) => {
@@ -26,7 +28,9 @@ function DeleteProblemForm() {
       setSubmitting(false);
     }
   };
-
+  useEffect(() => {
+    getValidApproaches(id, setValidApproach);
+  }, [id]);
   return (
     <div className="delete-problem-card">
       <h1 className="delete-problem-title">Delete a Problem</h1>
@@ -47,7 +51,7 @@ function DeleteProblemForm() {
           <option value="" disabled>
             Select a pattern
           </option>
-          {approaches.map((p, i) => (
+          {validApproach.map((p, i) => (
             <option key={i} value={p}>
               {p}
             </option>

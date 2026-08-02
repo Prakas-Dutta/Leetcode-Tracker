@@ -29,7 +29,8 @@ def database_setup(conn):
             CREATE TABLE user_info (
                 user_id INT PRIMARY KEY AUTO_INCREMENT,
                 username VARCHAR(200),
-                password VARCHAR(50)
+                leetcode_username VARCHAR(200),
+                password VARCHAR(60)
             )
         ''')
         cursor.execute('''
@@ -74,7 +75,7 @@ except Exception:
         password = DB_PASSWORD,
     )
     cursor = conn.cursor()
-    cursor.execute('create database leetcode;')
+    cursor.execute(f'create database {DB_NAME}')
     cursor.close()
     conn.close()
     conn = mysql.connector.connect(

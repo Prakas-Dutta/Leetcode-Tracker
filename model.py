@@ -14,6 +14,10 @@ class UpdatedInfo(BaseModel):
         approach:str
         updated_approach:str
 
-class UserInfo(BaseModel):
+class SignupUserInfo(BaseModel):
+        username:str
+        leetcode_username:str
+        password:str
+class LoginUserInfo(BaseModel):
         username:str
         password:str

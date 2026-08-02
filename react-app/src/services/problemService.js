@@ -1,12 +1,10 @@
 // src/services/problemService.js
 import BASE_URL from "./api";
 
-const access_token = localStorage.getItem("access_token");
 
 export async function getProblemCount() {
   const res = await fetch(`${BASE_URL}/problem_list/`, 
-  {headers: { "Content-Type": "application/json", token: access_token }});
-  console.log(res)
+  {headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") }});
   if (!res.ok) throw new Error("Failed to fetch problems");
   return res.json();
 }
@@ -14,7 +12,7 @@ export async function getProblemCount() {
 export async function addProblem(problem) {
   const res = await fetch(`${BASE_URL}/completed_list/`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", token: access_token },
+    headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") },
     body: JSON.stringify(problem),
   });
   const data = await res.json();
@@ -29,7 +27,7 @@ export async function addProblem(problem) {
 export async function updateProblem(updates) {
   const res = await fetch(`${BASE_URL}/completed_list/`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json", token: access_token },
+    headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") },
     body: JSON.stringify(updates),
   });
   if (!res.ok) throw new Error("Failed to update problem");
@@ -39,7 +37,7 @@ export async function updateProblem(updates) {
 export async function deleteProblem(id, approach) {
   const res = await fetch(`${BASE_URL}/completed_list/`, {
     method: "DELETE",
-    headers: { "Content-Type": "application/json", token: access_token },
+    headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") },
     body: JSON.stringify({ leetcode_id: id, approach: approach }),
   });
   const data = await res.json();
@@ -53,7 +51,7 @@ export async function deleteProblem(id, approach) {
 
 export async function getPerformance() {
   const res = await fetch(`${BASE_URL}/completed_list/`, {
-    headers: { "Content-Type": "application/json", token: access_token }
+    headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") }
   });
   const data = await res.json();
 
@@ -66,7 +64,7 @@ export async function getPerformance() {
 
 export async function chatbotSuggestions() {
   const res = await fetch(`${BASE_URL}/suggestions/`, {
-    headers: { "Content-Type": "application/json", token: access_token }
+    headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") }
   });
   const data = await res.json();
 
@@ -84,7 +82,7 @@ export async function getTitle(id, setProblemTitle, setLoading) {
     return;
   }
   const res = await fetch(`${BASE_URL}/${id}/`, {
-    headers: { "Content-Type": "application/json", token: access_token }
+    headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") }
   });
   const data = await res.json();
   if (!res.ok) {
@@ -100,7 +98,7 @@ export async function getValidApproaches(id, setValidApproaches) {
     return;
   }
   const res = await fetch(`${BASE_URL}/valid_approaches/${id}/`, {
-    headers: { "Content-Type": "application/json", "token": access_token }
+    headers: { "Content-Type": "application/json", "token": localStorage.getItem("access_token") }
   });
   const data = await res.json();
   if (!res.ok) {
@@ -123,18 +121,30 @@ export async function loginUser(username, password) {
   return data.message;
 }
 
-export async function signupUser(username, password) {
+export async function signupUser(username, leetcode_username, password) {
   const res = await fetch(`${BASE_URL}/signup/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username:username, password:password }),
+    body: JSON.stringify({ username:username, leetcode_username:leetcode_username, password:password }),
   });
   const data = await res.json();
   return data;
 }
 
-export function authenticateUser(username, password) {
-  if (!username || !password) {
+export function authenticateUser(array) {
+  if(array.length === 3) {
+    var username = array[0];
+    var leetcode_username = array[1];
+    var password = array[2];
+  }
+  else if(array.length === 2) {
+    var username = array[0];
+    var password = array[1];
+  }
+  if(array.length === 3 && (!username || !leetcode_username || !password)) {
+    throw new Error("Username, Leetcode username and password are required");
+  }
+  else if (!username || !password) {
     throw new Error("Username and password are required");
   }
   else if (username.includes(" ") || password.includes(" ")) {

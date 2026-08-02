@@ -1,20 +1,20 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { isTokenExpired } from "../services/problemService";
 
 function ProtectedRoute({ children }) {
   const navigate = useNavigate();
   const token = sessionStorage.getItem("access_token");
-  console.log(token);
+  const expired = isTokenExpired(token);
+
   useEffect(() => {
-    if (!token) {
+    if (expired) {
+      sessionStorage.removeItem("access_token");
       navigate("/", { replace: true });
     }
-  }, [token, navigate]);
+  }, [expired, navigate]);
 
-  if (!token) {
-    return null;
-  }
-
+  if (expired) return null;
   return children;
 }
 

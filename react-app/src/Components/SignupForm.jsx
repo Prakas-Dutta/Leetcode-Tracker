@@ -14,7 +14,7 @@ function SignupForm() {
             if (authenticateUser(username, password)) {
                     const status = await signupUser(username, password);
                     if(status.detail === "User created successfully") {
-                    navigate("/home");
+                    navigate("/login");
                     } else {
                         alert(status.detail);
                     }

@@ -1,6 +1,6 @@
 // src/components/ProblemCount.jsx
 import { useState, useEffect } from "react";
-import { getProblems } from "../services/problemService";
+import { getProblemCount } from "../services/problemService";
 import "../Styles/ProblemCount.css";
 import { Outlet } from "react-router-dom";
 
@@ -10,7 +10,7 @@ function ProblemCount() {
   useEffect(() => {
     async function fetchCount() {
       try {
-        const data = await getProblems();
+        const data = await getProblemCount();
         setCount(data);
       } catch (err) {
         console.error(err);

@@ -18,7 +18,7 @@ def hash_password(password: str):
     return crypt_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str):
-    return crypt_context.verify(plain_password, hashed_password)
+    return crypt_context.verify(plain_password[:72], hashed_password)
 
 def create_access_token(userinfo: dict):
     expire = datetime.now(timezone.utc) + timedelta(minutes=15)
@@ -30,7 +30,7 @@ def create_access_token(userinfo: dict):
 
 def verify_access_token(token: str = Header(...)):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
@@ -142,10 +142,10 @@ def login_user(userinfo: LoginUserInfo):
     result = cursor.fetchone()
     if result is None:
         cursor.close()
-        raise HTTPException(status_code=404, detail='No user found with this username')
+        raise HTTPException(status_code=401, detail='invalid credentials')
     if not verify_password(userinfo.password, result['password']):
         cursor.close()
-        raise HTTPException(status_code=404, detail='Invalid credentials')
+        raise HTTPException(status_code=401, detail='Invalid credentials')
     cursor.close()
     return {"message": "Login successful", "token": create_access_token(userinfo.model_dump())}
 

@@ -156,12 +156,6 @@ export function authenticateUser(array) {
   else if (!username.includes("@")) {
     throw new Error("Username must contain '@'");
   }
-  else if (!username.includes(".com")) {
-    throw new Error("Username must contain '.com'");
-  }
-  else if (username.indexOf("@") > username.indexOf(".com")) {
-    throw new Error("Username must contain '@' before '.com'");
-  }
   else if (username.indexOf("@") !== username.lastIndexOf("@")) {
     throw new Error("Username must contain only one '@'");
   }

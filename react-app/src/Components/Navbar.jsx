@@ -1,20 +1,20 @@
 
 function Navbar() {
     return (
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/home">LeetiBuddy</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+    <nav className="navbar navbar-expand-lg bg-body-tertiary">
+    <div className="container-fluid">
+      <a className="navbar-brand" href="/home">LeetiBuddy</a>
+      <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span className="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <a class="nav-link active" aria-current="page" href="/home">Home</a>
-          <a class="nav-link" href="/add">Add Problem</a>
-          <a class="nav-link" href="/delete">Delete Problem</a>
-          <a class="nav-link" href="/update">Update Problem</a>
-          <a class="nav-link" href="/performance">Performance</a>
-          <a class="nav-link" href="/suggestions">Suggestions</a>
+      <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div className="navbar-nav">
+          <a className="nav-link active" aria-current="page" href="/home">Home</a>
+          <a className="nav-link" href="/add">Add Problem</a>
+          <a className="nav-link" href="/delete">Delete Problem</a>
+          <a className="nav-link" href="/update">Update Problem</a>
+          <a className="nav-link" href="/performance">Performance</a>
+          <a className="nav-link" href="/suggestions">Suggestions</a>
         </div>
       </div>
     </div>

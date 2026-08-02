@@ -4,7 +4,7 @@ import BASE_URL from "./api";
 
 export async function getProblemCount() {
   const res = await fetch(`${BASE_URL}/problem_list/`, 
-  {headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") }});
+  {headers: { "Content-Type": "application/json", token: sessionStorage.getItem("access_token") }});
   if (!res.ok) throw new Error("Failed to fetch problems");
   return res.json();
 }
@@ -12,7 +12,7 @@ export async function getProblemCount() {
 export async function addProblem(problem) {
   const res = await fetch(`${BASE_URL}/completed_list/`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") },
+    headers: { "Content-Type": "application/json", token: sessionStorage.getItem("access_token") },
     body: JSON.stringify(problem),
   });
   const data = await res.json();
@@ -27,7 +27,7 @@ export async function addProblem(problem) {
 export async function updateProblem(updates) {
   const res = await fetch(`${BASE_URL}/completed_list/`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") },
+    headers: { "Content-Type": "application/json", token: sessionStorage.getItem("access_token") },
     body: JSON.stringify(updates),
   });
   if (!res.ok) throw new Error("Failed to update problem");
@@ -37,7 +37,7 @@ export async function updateProblem(updates) {
 export async function deleteProblem(id, approach) {
   const res = await fetch(`${BASE_URL}/completed_list/`, {
     method: "DELETE",
-    headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") },
+    headers: { "Content-Type": "application/json", token: sessionStorage.getItem("access_token") },
     body: JSON.stringify({ leetcode_id: id, approach: approach }),
   });
   const data = await res.json();
@@ -51,7 +51,7 @@ export async function deleteProblem(id, approach) {
 
 export async function getPerformance() {
   const res = await fetch(`${BASE_URL}/completed_list/`, {
-    headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") }
+    headers: { "Content-Type": "application/json", token: sessionStorage.getItem("access_token") }
   });
   const data = await res.json();
 
@@ -64,7 +64,7 @@ export async function getPerformance() {
 
 export async function chatbotSuggestions() {
   const res = await fetch(`${BASE_URL}/suggestions/`, {
-    headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") }
+    headers: { "Content-Type": "application/json", token: sessionStorage.getItem("access_token") }
   });
   const data = await res.json();
 
@@ -82,7 +82,7 @@ export async function getTitle(id, setProblemTitle, setLoading) {
     return;
   }
   const res = await fetch(`${BASE_URL}/${id}/`, {
-    headers: { "Content-Type": "application/json", token: localStorage.getItem("access_token") }
+    headers: { "Content-Type": "application/json", token: sessionStorage.getItem("access_token") }
   });
   const data = await res.json();
   if (!res.ok) {
@@ -98,7 +98,7 @@ export async function getValidApproaches(id, setValidApproaches) {
     return;
   }
   const res = await fetch(`${BASE_URL}/valid_approaches/${id}/`, {
-    headers: { "Content-Type": "application/json", "token": localStorage.getItem("access_token") }
+    headers: { "Content-Type": "application/json", "token": sessionStorage.getItem("access_token") }
   });
   const data = await res.json();
   if (!res.ok) {
@@ -114,7 +114,7 @@ export async function loginUser(username, password) {
     body: JSON.stringify({ username:username, password:password }),
   });
   const data = await res.json();
-  localStorage.setItem("access_token", data.token);
+  sessionStorage.setItem("access_token", data.token);
   if (!res.ok) {
     throw new Error(data.detail || "Failed to validate user");
   }

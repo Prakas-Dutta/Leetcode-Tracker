@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException, Header, Depends
-from server.database import conn
-from server.model import CompletedProblem, UpdatedInfo, LoginUserInfo, SignupUserInfo
+from database import conn
+from model import CompletedProblem, UpdatedInfo, LoginUserInfo, SignupUserInfo
 import httpx
-from server.ai_support import build_prompt, extract_json
+from ai_support import build_prompt, extract_json
 from dotenv import load_dotenv
-from server.get_recent_leetcode_solutions import get_leetcode_profile_data
+from get_recent_leetcode_solutions import get_leetcode_profile_data
 import json
 import os
 from jose import jwt
@@ -61,7 +61,6 @@ app.add_middleware(
 
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-LEETCODE_USERNAME = os.getenv("LEETCODE_USERNAME")
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent"
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")

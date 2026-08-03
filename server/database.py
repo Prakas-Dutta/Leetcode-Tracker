@@ -1,5 +1,5 @@
 import mysql.connector
-from server.leetcode_all_problems import fetch_all_problems
+from leetcode_all_problems import fetch_all_problems
 import os
 from dotenv import load_dotenv
 
@@ -9,7 +9,7 @@ DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
-
+DB_PORT = int(os.getenv("DB_PORT"))
 
 def database_setup(conn):
     cursor = conn.cursor(buffered = True)
@@ -66,23 +66,35 @@ try:
         host = DB_HOST,
         user = DB_USER,
         password = DB_PASSWORD,
-        database = DB_NAME
+        database = DB_NAME,
+        port = DB_PORT,
+        ssl_ca="ca.pem",
+        ssl_verify_cert=True,
+        use_pure = True
     )
 except Exception:
     conn = mysql.connector.connect(
         host = DB_HOST,
         user = DB_USER,
         password = DB_PASSWORD,
+        port = DB_PORT,
+        ssl_ca="ca.pem",
+        ssl_verify_cert=True,
+        use_pure = True
     )
     cursor = conn.cursor()
     cursor.execute(f'create database {DB_NAME}')
     cursor.close()
     conn.close()
     conn = mysql.connector.connect(
-        host = DB_HOST,
-        user = DB_USER,
-        password = DB_PASSWORD,
-        database = DB_NAME
+        host=DB_HOST,
+        user=DB_USER,
+        port=DB_PORT,
+        password=DB_PASSWORD,
+        database=DB_NAME,
+        ssl_ca="ca.pem",
+        ssl_verify_cert=True,
+        use_pure = True
     )
 
 database_setup(conn)

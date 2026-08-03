@@ -1,5 +1,5 @@
 import mysql.connector
-from leetcode_all_problems import fetch_all_problems
+from server.leetcode_all_problems import fetch_all_problems
 import os
 from dotenv import load_dotenv
 

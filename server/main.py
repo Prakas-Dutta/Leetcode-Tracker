@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException, Header, Depends
-from database import conn
-from model import CompletedProblem, UpdatedInfo, LoginUserInfo, SignupUserInfo
+from server.database import conn
+from server.model import CompletedProblem, UpdatedInfo, LoginUserInfo, SignupUserInfo
 import httpx
-from ai_support import build_prompt, extract_json
+from server.ai_support import build_prompt, extract_json
 from dotenv import load_dotenv
-from get_recent_leetcode_solutions import get_leetcode_profile_data
+from server.get_recent_leetcode_solutions import get_leetcode_profile_data
 import json
 import os
 from jose import jwt
@@ -49,9 +49,11 @@ app = FastAPI()
 
 
 
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,5 +1,4 @@
 from fastapi import FastAPI, HTTPException, Header, Depends
-from database import conn
 from model import CompletedProblem, UpdatedInfo, LoginUserInfo, SignupUserInfo
 import httpx
 from ai_support import build_prompt, extract_json
@@ -11,7 +10,7 @@ from jose import jwt
 from datetime import timedelta, datetime, timezone
 from passlib.context import CryptContext
 from fastapi.middleware.cors import CORSMiddleware
-
+from database import connect_db
 
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def hash_password(password: str):
@@ -20,7 +19,7 @@ def hash_password(password: str):
 def verify_password(plain_password: str, hashed_password: str):
     return crypt_context.verify(plain_password[:72], hashed_password)
 
-def create_access_token(userinfo: dict):
+def create_access_token(userinfo: dict, conn):
     expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     cursor = conn.cursor(buffered=True, dictionary=True)
     cursor.execute('SELECT user_id FROM user_info WHERE username=%s', (userinfo['username'], ))
@@ -37,7 +36,7 @@ def verify_access_token(token: str = Header(...)):
     except jwt.JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-def get_list(user_info):
+def get_list(user_info, conn):
     cursor = conn.cursor(buffered=True, dictionary=True)
     cursor.execute('SELECT DISTINCT approach, COUNT(*) as no_of_problems FROM completed_list WHERE user_id = %s GROUP BY approach', (user_info['user_id'],))
     result = cursor.fetchall()
@@ -67,7 +66,7 @@ ALGORITHM = os.getenv("ALGORITHM")
 
 
 @app.get("/health")
-def health_check():
+def health_check(conn = Depends(connect_db)):
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT 1")
@@ -77,7 +76,7 @@ def health_check():
         return {"status": "error", "database": str(e)}
 
 @app.get('/{id}')
-def get_problem_info(id: int):
+def get_problem_info(id: int, conn = Depends(connect_db)):
     cursor = conn.cursor(dictionary=True)
     cursor.execute('SELECT * FROM problem_list WHERE leetcode_id = %s', (id,))
     problem = cursor.fetchone()
@@ -87,7 +86,7 @@ def get_problem_info(id: int):
     return problem
 
 @app.post('/completed_list/')
-def add_problem(problem_info: CompletedProblem, token: dict = Depends(verify_access_token)):
+def add_problem(problem_info: CompletedProblem, token: dict = Depends(verify_access_token), conn = Depends(connect_db)):
     problem = problem_info.model_dump()
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM completed_list WHERE leetcode_id = %s and user_id = %s and approach = %s', (problem['leetcode_id'], token['user_id'], problem['approach']))
@@ -102,7 +101,7 @@ def add_problem(problem_info: CompletedProblem, token: dict = Depends(verify_acc
         return 'Added successfully!!!'
 
 @app.get('/problem_list/')
-def no_of_problem(user_info: dict = Depends(verify_access_token)):
+def no_of_problem(user_info: dict = Depends(verify_access_token), conn = Depends(connect_db)):
     cursor = conn.cursor(buffered=True)
     cursor.execute('SELECT COUNT(*) FROM completed_list WHERE user_id = %s', (user_info['user_id'],))
     number = cursor.fetchone()
@@ -112,12 +111,12 @@ def no_of_problem(user_info: dict = Depends(verify_access_token)):
 
 
 @app.get('/completed_list/')
-def list_problem_approach(user_info: dict = Depends(verify_access_token)):
-    return get_list(user_info)
+def list_problem_approach(user_info: dict = Depends(verify_access_token), conn = Depends(connect_db)):
+    return get_list(user_info, conn)
 
 
 @app.delete('/completed_list/')
-def delete_completed_problem(problem:CompletedProblem, user_info: dict = Depends(verify_access_token)):
+def delete_completed_problem(problem:CompletedProblem, user_info: dict = Depends(verify_access_token), conn = Depends(connect_db)):
     id, approach = problem.leetcode_id, problem.approach
     cursor = conn.cursor(buffered=True)
     cursor.execute('SELECT * FROM completed_list WHERE leetcode_id=%s and approach=%s and user_id=%s', (id, approach, user_info['user_id']))
@@ -133,7 +132,7 @@ def delete_completed_problem(problem:CompletedProblem, user_info: dict = Depends
 
 
 @app.patch('/completed_list/')
-def update_approach(problem_info:UpdatedInfo, user_info: dict = Depends(verify_access_token)):
+def update_approach(problem_info:UpdatedInfo, user_info: dict = Depends(verify_access_token), conn = Depends(connect_db)):
     problem = problem_info.model_dump()
     cursor = conn.cursor(buffered=True)
     cursor.execute('SELECT * FROM completed_list WHERE leetcode_id=%s and approach=%s and user_id=%s', (problem['leetcode_id'], problem['approach'], user_info['user_id']))
@@ -148,7 +147,7 @@ def update_approach(problem_info:UpdatedInfo, user_info: dict = Depends(verify_a
         raise HTTPException(status_code=404, detail='The value of ID or approach is wrong')
 
 @app.post('/login/')
-def login_user(userinfo: LoginUserInfo):
+def login_user(userinfo: LoginUserInfo, conn = Depends(connect_db)):
     cursor = conn.cursor(buffered=True, dictionary=True)
     cursor.execute('SELECT * FROM user_info WHERE username=%s', (userinfo.username,))
     result = cursor.fetchone()
@@ -159,10 +158,10 @@ def login_user(userinfo: LoginUserInfo):
         cursor.close()
         raise HTTPException(status_code=401, detail='Invalid credentials')
     cursor.close()
-    return {"message": "Login successful", "token": create_access_token(userinfo.model_dump())}
+    return {"message": "Login successful", "token": create_access_token(userinfo.model_dump(), conn)}
 
 @app.post('/signup/')
-def signup_user(userinfo: SignupUserInfo):
+def signup_user(userinfo: SignupUserInfo, conn = Depends(connect_db)):
     cursor = conn.cursor(buffered=True)
     cursor.execute('SELECT * FROM user_info WHERE username=%s', (userinfo.username,))
     result = cursor.fetchone()
@@ -180,7 +179,7 @@ def signup_user(userinfo: SignupUserInfo):
     return 'User created successfully'
 
 @app.get('/valid_approaches/{id}/')
-def get_valid_approaches(id: int, user_info: dict = Depends(verify_access_token)):
+def get_valid_approaches(id: int, user_info: dict = Depends(verify_access_token), conn = Depends(connect_db)):
     cursor = conn.cursor(buffered=True, dictionary=True)
     cursor.execute('SELECT approach FROM completed_list WHERE leetcode_id=%s and user_id=%s', (id, user_info['user_id']))
     result = cursor.fetchall()
@@ -188,7 +187,7 @@ def get_valid_approaches(id: int, user_info: dict = Depends(verify_access_token)
     return [row['approach'] for row in result]
 
 @app.get('/suggestions/')
-async def get_suggestions(user_info: dict = Depends(verify_access_token)):
+async def get_suggestions(user_info: dict = Depends(verify_access_token), conn = Depends(connect_db)):
     cursor = conn.cursor(buffered=True, dictionary=True)
     cursor.execute('SELECT leetcode_username FROM user_info WHERE user_id=%s', (user_info['user_id'],))
     leetcode_username = cursor.fetchone()['leetcode_username']

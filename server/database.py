@@ -1,4 +1,5 @@
 import mysql.connector
+import mysql.connector.pooling
 from leetcode_all_problems import fetch_all_problems
 import os
 from dotenv import load_dotenv
@@ -11,8 +12,9 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 DB_PORT = int(os.getenv("DB_PORT"))
 
+
 def database_setup(conn):
-    cursor = conn.cursor(buffered = True)
+    cursor = conn.cursor(buffered=True)
 
     cursor.execute("SHOW TABLES")
     table_exists = cursor.fetchone() is not None
@@ -61,40 +63,68 @@ def database_setup(conn):
 
     conn.commit()
     cursor.close()
+
+
+
 try:
-    conn = mysql.connector.connect(
-        host = DB_HOST,
-        user = DB_USER,
-        password = DB_PASSWORD,
-        database = DB_NAME,
-        port = DB_PORT,
-        ssl_ca="ca.pem",
-        ssl_verify_cert=True,
-        use_pure = True
-    )
-except Exception:
-    conn = mysql.connector.connect(
-        host = DB_HOST,
-        user = DB_USER,
-        password = DB_PASSWORD,
-        port = DB_PORT,
-        ssl_ca="ca.pem",
-        ssl_verify_cert=True,
-        use_pure = True
-    )
-    cursor = conn.cursor()
-    cursor.execute(f'create database {DB_NAME}')
-    cursor.close()
-    conn.close()
-    conn = mysql.connector.connect(
+    _setup_conn = mysql.connector.connect(
         host=DB_HOST,
         user=DB_USER,
-        port=DB_PORT,
         password=DB_PASSWORD,
         database=DB_NAME,
+        port=DB_PORT,
         ssl_ca="ca.pem",
         ssl_verify_cert=True,
-        use_pure = True
+        use_pure=True
+    )
+except Exception:
+    _bootstrap_conn = mysql.connector.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        port=DB_PORT,
+        ssl_ca="ca.pem",
+        ssl_verify_cert=True,
+        use_pure=True
+    )
+    _cursor = _bootstrap_conn.cursor()
+    _cursor.execute(f'create database {DB_NAME}')
+    _cursor.close()
+    _bootstrap_conn.close()
+
+    _setup_conn = mysql.connector.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME,
+        port=DB_PORT,
+        ssl_ca="ca.pem",
+        ssl_verify_cert=True,
+        use_pure=True
     )
 
-database_setup(conn)
+database_setup(_setup_conn)
+_setup_conn.close()
+
+
+
+pool = mysql.connector.pooling.MySQLConnectionPool(
+    pool_name="tracker_pool",
+    pool_size=5,
+    host=DB_HOST,
+    user=DB_USER,
+    password=DB_PASSWORD,
+    database=DB_NAME,
+    port=DB_PORT,
+    ssl_ca="ca.pem",
+    ssl_verify_cert=True,
+    use_pure=True
+)
+
+
+def connect_db():
+    conn = pool.get_connection()
+    try:
+        yield conn
+    finally:
+        conn.close()

@@ -10,6 +10,7 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     if (expired) {
       sessionStorage.removeItem("access_token");
+      alert("You have to login to access this page. Please login.");
       navigate("/", { replace: true });
     }
   }, [expired, navigate]);

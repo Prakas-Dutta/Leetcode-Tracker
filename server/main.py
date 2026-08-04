@@ -65,6 +65,17 @@ GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 
+
+@app.get("/health")
+def health_check():
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        cursor.close()
+        return {"status": "ok", "database": "connected"}
+    except Exception as e:
+        return {"status": "error", "database": str(e)}
+
 @app.get('/{id}')
 def get_problem_info(id: int):
     cursor = conn.cursor(dictionary=True)

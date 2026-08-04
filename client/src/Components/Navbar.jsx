@@ -16,6 +16,11 @@ function Navbar() {
           <Link className="nav-link" to="/update">Update Problem</Link>
           <Link className="nav-link" to="/performance">Performance</Link>
           <Link className="nav-link" to="/suggestions">Suggestions</Link>
+          {!sessionStorage.getItem("access_token") ? (
+              <Link className="nav-link" to="/login">Login</Link>
+          ) : (
+              <Link className="nav-link" to="/logout">Logout</Link>
+          )}
         </div>
       </div>
     </div>

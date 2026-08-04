@@ -12,6 +12,7 @@ import UpdateProblemForm from "./Components/UpdateProblemForm";
 import LoginForm from "./Components/LoginForm";
 import SignupForm from "./Components/SignupForm";
 import ProtectedRoute from "./Components/ProtectedRoute";
+import LogoutForm from "./Components/LogoutForm";
 
 function App() {
   const [problems, setProblems] = useState([]);
@@ -21,14 +22,16 @@ function App() {
   };
 
 const router = createBrowserRouter([
-    {path: "/", element: <LoginForm />},
+    {path: "/login", element: <LoginForm />},
     {path: "/signup", element: <SignupForm />},
-    { path: "/home", element: <ProtectedRoute><><Navbar /><ProblemCount /><Home /></></ProtectedRoute> },
+    {path: "/logout", element: <LogoutForm/>},
+    { path: "/", element: <><Navbar /><ProblemCount /><Home /></> },
     { path: "/add", element: <ProtectedRoute><><Navbar /><AddProblemForm onProblemAdded={handleProblemAdded} /></></ProtectedRoute> },
     { path: "/delete", element: <ProtectedRoute><><Navbar /><DeleteProblemForm /></></ProtectedRoute> },
     { path: "/performance", element: <ProtectedRoute><><Navbar /><Performance /></></ProtectedRoute> },
     { path: "/suggestions", element: <ProtectedRoute><><Navbar /><Chatbot /></></ProtectedRoute> },
-    { path: "/update", element: <ProtectedRoute><><Navbar /><UpdateProblemForm /></></ProtectedRoute> }
+    { path: "/update", element: <ProtectedRoute><><Navbar /><UpdateProblemForm /></></ProtectedRoute> },
+    {path: "*", element: <><Navbar /><h1>404 - Page Not Found</h1></>},
 ]);
 
   return <RouterProvider router={router} />;

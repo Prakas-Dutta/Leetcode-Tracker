@@ -1,0 +1,56 @@
+.card {
+  max-width: 360px;
+  margin: 4rem auto;
+  padding: 2rem 1.75rem;
+  border-radius: 10px;
+  background: #12141c;
+  border: 1px solid #262a38;
+  text-align: center;
+  font-family: 'Inter', system-ui, sans-serif;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
+              0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.eyebrow {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 0.6rem;
+}
+
+.heading {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin: 0 0 1.5rem;
+}
+
+.logoutBtn {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fca5a5;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.logoutBtn:hover {
+  background: rgba(248, 113, 113, 0.16);
+  border-color: rgba(248, 113, 113, 0.55);
+}
+
+.logoutBtn:active {
+  transform: scale(0.98);
+}
+
+.logoutBtn:focus-visible {
+  outline: 2px solid #fca5a5;
+  outline-offset: 2px;
+}

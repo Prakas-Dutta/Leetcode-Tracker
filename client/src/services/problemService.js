@@ -3,6 +3,9 @@ import BASE_URL from "./api";
 
 
 export async function getProblemCount() {
+  if (!sessionStorage.getItem("access_token")) {
+    return 0;
+  }
   const res = await fetch(`${BASE_URL}/problem_list/`, 
   {headers: { "Content-Type": "application/json", token: sessionStorage.getItem("access_token") }});
   if (!res.ok) throw new Error("Failed to fetch problems");
@@ -129,6 +132,10 @@ export async function signupUser(username, leetcode_username, password) {
   });
   const data = await res.json();
   return data;
+}
+
+export function logoutUser() {
+  sessionStorage.removeItem("access_token");
 }
 
 export function authenticateUser(array) {

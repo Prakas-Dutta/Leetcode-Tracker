@@ -14,7 +14,7 @@ function LoginForm() {
                 const status = await loginUser(username, password);
                 console.log(status);
                 if(status === "Login successful") {
-                navigate("/home");
+                navigate("/");
                 } else {
                     alert("Login failed: Invalid username or password");
                 }

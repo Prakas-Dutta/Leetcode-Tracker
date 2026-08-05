@@ -13,6 +13,7 @@ import LoginForm from "./Components/LoginForm";
 import SignupForm from "./Components/SignupForm";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import LogoutForm from "./Components/LogoutForm";
+import PageNotFound from "./Components/PageNotFound";
 
 function App() {
   const [problems, setProblems] = useState([]);
@@ -31,7 +32,7 @@ const router = createBrowserRouter([
     { path: "/performance", element: <ProtectedRoute><><Navbar /><Performance /></></ProtectedRoute> },
     { path: "/suggestions", element: <ProtectedRoute><><Navbar /><Chatbot /></></ProtectedRoute> },
     { path: "/update", element: <ProtectedRoute><><Navbar /><UpdateProblemForm /></></ProtectedRoute> },
-    {path: "*", element: <><Navbar /><h1>404 - Page Not Found</h1></>},
+    {path: "*", element: <PageNotFound />},
 ]);
 
   return <RouterProvider router={router} />;

@@ -10,7 +10,7 @@ from jose import jwt
 from datetime import timedelta, datetime, timezone
 from passlib.context import CryptContext
 from fastapi.middleware.cors import CORSMiddleware
-from database import connect_db
+from database import connect_db, fetch_all_problems
 
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def hash_password(password: str):
@@ -65,15 +65,32 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 
 
-@app.get("/health")
-def health_check(conn = Depends(connect_db)):
+@app.get("/health/")
+def health_check(conn = Depends(connect_db)): # This is a cron job
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT 1")
+        cursor.fetchone()
         cursor.close()
         return {"status": "ok", "database": "connected"}
     except Exception as e:
         return {"status": "error", "database": str(e)}
+
+@app.get('/update_db/')
+def update_db_problem_list(conn=Depends(connect_db)): # This is a cron job
+        data = fetch_all_problems()
+        api_length = len(data)
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM problem_list")
+        database_length = cursor.fetchone()[0]
+
+        if api_length != database_length:
+            cursor.executemany(
+                "INSERT INTO problem_list VALUES (%s, %s, %s)",
+                data[database_length:]
+            )
+        cursor.close()
+        return {'status':'ok'}
 
 @app.get('/{id}')
 def get_problem_info(id: int, conn = Depends(connect_db)):

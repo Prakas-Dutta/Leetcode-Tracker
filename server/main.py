@@ -209,7 +209,7 @@ async def get_suggestions(user_info: dict = Depends(verify_access_token), conn =
     cursor.execute('SELECT leetcode_username FROM user_info WHERE user_id=%s', (user_info['user_id'],))
     leetcode_username = cursor.fetchone()['leetcode_username']
     cursor.close()
-    pattern_stats = get_list(user_info)
+    pattern_stats = get_list(user_info, conn)
 
     recent = await get_leetcode_profile_data(
         leetcode_username=leetcode_username, limit=20

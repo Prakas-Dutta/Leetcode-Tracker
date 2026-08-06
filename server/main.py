@@ -66,14 +66,12 @@ ALGORITHM = os.getenv("ALGORITHM")
 
 
 @app.get("/health/")
-def health_check():
+def health_check(conn = Depends(connect_db)): # This is a cron job
     try:
-        conn = connect_db()
         cursor = conn.cursor()
         cursor.execute("SELECT 1")
         cursor.fetchone()
         cursor.close()
-        conn.close()
         return {"status": "ok", "database": "connected"}
     except Exception as e:
         return {"status": "error", "database": str(e)}

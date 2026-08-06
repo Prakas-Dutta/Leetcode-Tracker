@@ -24,6 +24,8 @@ function LoginForm() {
         }
     };
   return (
+    <>
+    <center><h4>To get a demo use username: prakasdutta7@gmail.com and password: Prakas09@</h4></center>
     <div className="login-container">
         <h2>Login</h2>
         <form className="login-form" onSubmit={(e) => handleSubmit(e)}>
@@ -37,6 +39,7 @@ function LoginForm() {
         </form>
         <Link to="/signup" className="signup-link">Don't have an account? Sign up</Link>
     </div>
+    </>
   );
 }
 export default LoginForm;
